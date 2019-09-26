@@ -31,6 +31,7 @@ Definition orb_table (b c : bool) : bool :=
 (*** Exercise 2 *)
 
 (** 2a. Implement power function of two arguments [x] and [n],
+
         raising [x] to the power of [n] *)
 
 
@@ -74,8 +75,4 @@ Definition applyn (f : nat -> nat) :=
   fix rec (n : nat) (x : nat) :=
     if n is n'.+1 then rec n' (f x)
     else x.
-
-
-
-
 

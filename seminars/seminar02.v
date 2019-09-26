@@ -31,27 +31,51 @@ Proof. exact: flip. Qed.
 
 
 Lemma p_imp_np_iff_np : (A -> ~A)  <->  ~A.
-Admitted.
+Proof.
+  split. move => a b. move: (b). exact: a b.
+  exact: const.
+Qed.
 
 
 (* We can generalize the previous lemma into *)
 Lemma p_p_q_iff_p_q : (A -> A -> B)  <->  (A -> B).
-Admitted.
-
+Proof.
+  split. move => a b. move: (b). exact: a b.
+  exact: const.
+Qed.
 
 Lemma p_is_not_equal_not_p :
-  ~ (A <-> ~ A).
-Admitted.
+  ~ (A <-> ~ A). (* (A -> ~A) /\ (~A -> A) -> False *)
+Proof.
+  move=> [aina naia].
+  move: (aina).
+  move/p_imp_np_iff_np.
+  move=> na.
+  move: (naia na).
+  move=> aa.
+  exact.
+Defined.
 
-
-Lemma not_not_lem :
-  ~ ~ (A \/ ~ A).
-Admitted.
+Lemma not_not_lem : ~ ~ (A \/ ~ A).
+Proof.
+  move => not_lem.
+  apply: (not_lem).
+  right.
+  move => a.
+  apply: not_lem.
+  by  left.
+Qed.
 
 
 Lemma constructiveDNE :
   ~ ~ ~ A  ->  ~ A.
-Admitted.
+Proof.
+  move=> nnna aa.
+  apply: (nnna).
+  move=> na.
+  move: aa.
+  exact: na.
+Qed.
 
 End IntLogic.
 
@@ -62,29 +86,58 @@ End IntLogic.
 
 Section BooleanLogic.
 
+Compute (orb).
+
 Lemma LEM_decidable a :
   a || ~~ a.
-Admitted.
+Proof.
+  case a.
+  exact.
+  exact.
+Qed.
 
 Lemma disj_implb a b :
   a || (a ==> b).
-Admitted.
+Proof.
+  case a.
+  exact.
+  exact.
+Qed.
 
 Lemma iff_is_if_and_only_if a b :
   (a ==> b) && (b ==> a) = (a == b).
-Admitted.
+Proof.
+  case a.
+  case b.
+  exact.
+  exact.
+  exact.
+Qed.
+
 
 Lemma implb_trans : transitive implb.
-Admitted.
+Proof.
+  move=> y x z.
+  case x.
+  case y.
+  exact.
+  exact.
+  exact.
+Qed.
 
-Lemma triple_compb (f : bool -> bool) :
-  f \o f \o f =1 f.
-Admitted.
+
+(* Lemma triple_compb (f : bool -> bool) : *)
+(*   f \o f \o f =1 f. *)
+(* Proof. *)
+(*   compute. *)
+(*   move=> x. *)
+
 
 (* negb \o odd means "even" *)
 Lemma even_add :
   {morph (negb \o odd) : x y / x + y >-> x == y}.
-Admitted.
+Proof.
+Qed.
 
 End BooleanLogic.
 
@@ -96,25 +149,45 @@ Variables A B C D : Type.
 
 Lemma compA (f : A -> B) (g : B -> C) (h : C -> D) :
   h \o g \o f = h \o (g \o f).
-Admitted.
+Proof.
+  compute.
+  exact.
+Qed.
 
 Lemma eq_compl (f g : A -> B) (h : B -> C) :
   f =1 g -> h \o f =1 h \o g.
-Admitted.
+Proof.
+  compute.
+  move=> eqfg x.
+  rewrite eqfg.
+  exact.
+Qed.
 
 Lemma eq_compr (f g : B -> C) (h : A -> B) :
   f =1 g -> f \o h =1 g \o h.
-Admitted.
+Proof.
+  compute.
+  move=> eqfg x.
+  by rewrite eqfg.
+Qed.
 
 Lemma eq_idl (g1 g2 : A -> B) (f : B -> B) :
   f =1 id -> f \o g1 =1 f \o g2 -> g1 =1 g2.
 Proof.
-Admitted.
+  compute.
+  move=> eqfid eqfg x.
+  move: (eqfg x).
+  rewrite eqfid; by rewrite eqfid.
+Qed.
 
 Lemma eq_idr (f1 f2 : A -> B) (g : A -> A) :
   g =1 id -> f1 \o g =1 f2 \o g -> f1 =1 f2.
 Proof.
-Admitted.
+  compute.
+  move=> eqgid eqfg x.
+  move: (eqfg x).
+  by rewrite eqgid.
+Qed.
 
 End eq_comp.
 
