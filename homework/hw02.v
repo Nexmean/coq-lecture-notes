@@ -9,23 +9,37 @@ Variables A B C : Prop.
 
 Lemma notTrue_iff_False : (~ True) <-> False.
 Proof.
-Admitted.
+ split.
+ - rewrite /not. move=> nt. exact: (nt I).
+ - rewrite /not. move=> f _. exact.
+Qed.
 
 Lemma dne_False : ~ ~ False -> False.
 Proof.
-Admitted.
+  rewrite /not.
+  move=> nnf.
+  by apply: nnf.
+Qed.
 
 Lemma dne_True : ~ ~ True -> True.
 Proof.
-Admitted.
+  by move=> _.
+Qed.
 
 Lemma weak_peirce : ((((A -> B) -> A) -> A) -> B) -> B.
 Proof.
-Admitted.
+  move=> aibiaiaib.
+  apply: (aibiaiaib).
+  apply.
+  move=> a.
+  exact: aibiaiaib.
+Qed.
 
 Lemma imp_trans : (A -> B) -> (B -> C) -> (A -> C).
 Proof.
-Admitted.
+  move=> aib bic.
+  exact (bic \o aib).
+Qed.
 
 End IntLogic.
 
@@ -39,7 +53,8 @@ Variables (A B : Type) (x : A) (f : A -> B) (a b : bool) (vT vF : A).
 
 Lemma negbNE : ~~ ~~ b -> b.
 Proof.
-Admitted.
+  by case b.
+Qed.
 
 (** Figure out what [involutive] and [injective] mean
     using Coq's interactive queries. Prove the lemmas.
@@ -47,59 +62,78 @@ Admitted.
 *)
 Lemma negbK : involutive negb.
 Proof.
-Admitted.
+  rewrite /involutive. rewrite /cancel.
+  move=> x0. by case x0.
+Qed.
 
 Lemma negb_inj : injective negb.
 Proof.
-Admitted.
+  rewrite /injective.
+  by case; case.
+Qed.
 
 Lemma ifT : b -> (if b then vT else vF) = vT.
 Proof.
-Admitted.
+  by move=> bt; rewrite bt.
+Qed.
 
 Lemma ifF : b = false -> (if b then vT else vF) = vF.
 Proof.
-Admitted.
+  by move=> bf; rewrite bf.
+Qed.
 
 Lemma if_same : (if b then vT else vT) = vT.
 Proof.
-Admitted.
+  by case b.
+Qed.
 
 Lemma if_neg : (if ~~ b then vT else vF) = if b then vF else vT.
 Proof.
-Admitted.
+  by case b.
+Qed.
 
 Lemma fun_if : f (if b then vT else vF) = if b then f vT else f vF.
 Proof.
-Admitted.
+  by case b.
+Qed.
 
 Lemma if_arg (fT fF : A -> B) :
   (if b then fT else fF) x = if b then fT x else fF x.
 Proof.
-Admitted.
+  by case b.
+Qed.
 
 Lemma andbK : a && b || a = a.
 Proof.
-Admitted.
+  by case a; case b.
+Qed.
 
 (** Find out what [left_id], [right_id] mean
     using Coq's interactive queries. Prove the lemmas.
  *)
 Lemma addFb : left_id false addb.    (* [addb] means XOR (eXclusive OR operation) *)
 Proof.
-Admitted.
+  rewrite /left_id.
+  by case.
+Qed.
 
 Lemma addbF : right_id false addb.
 Proof.
-Admitted.
+  rewrite /right_id.
+  by case.
+Qed.
 
 Lemma addbC : commutative addb.
 Proof.
-Admitted.
+  rewrite /commutative.
+  by case; case.
+Qed.
 
 Lemma addbA : associative addb.
 Proof.
-Admitted.
+  rewrite /associative.
+  by case; case; case.
+Qed.
 
 
 (** Formulate analogous laws (left/right identity, commutativity, associativity)
@@ -108,6 +142,29 @@ Admitted.
     [Search] command. For instance: [Search _ andb left_id.]
     Have you noticed the naming patterns?
  *)
+Lemma andTb : left_id true andb.
+Proof.
+  rewrite /left_id.
+  by move=> x0.
+Qed.
+
+Lemma andbT : right_id true andb.
+Proof.
+  rewrite /right_id.
+  by case.
+Qed.
+
+Lemma andbC : commutative andb.
+Proof.
+  rewrite /commutative.
+  by case; case.
+Qed.
+
+Lemma andbA : associative andb.
+Proof.
+  rewrite /associative.
+  by case.
+Qed.
 
 End BooleanLogic.
 
@@ -119,26 +176,35 @@ Section NaturalNumbers.
  *)
 Lemma succnK : cancel succn predn.
 Proof.
-Admitted.
+  rewrite /cancel.
+  case.
+  exact.
+  by rewrite /cancel; case.
+Qed.
 
 Lemma add0n : left_id 0 addn.
 Proof.
-Admitted.
+  by rewrite /left_id; case.
+Qed.
 
 Lemma addSn m n : m.+1 + n = (m + n).+1.
 Proof.
-Admitted.
+  by case m; case n.
+Qed.
 
 Lemma add1n n : 1 + n = n.+1.
 Proof.
-Admitted.
+  by case n.
+Qed.
 
 Lemma add2n m : 2 + m = m.+2.
 Proof.
-Admitted.
+  by case m.
+Qed.
 
 Lemma subn0 : right_id 0 subn.
 Proof.
-Admitted.
+  by rewrite /right_id; case.
+Qed.
 
 End NaturalNumbers.

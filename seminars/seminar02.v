@@ -126,17 +126,57 @@ Proof.
 Qed.
 
 
-(* Lemma triple_compb (f : bool -> bool) : *)
-(*   f \o f \o f =1 f. *)
-(* Proof. *)
-(*   compute. *)
-(*   move=> x. *)
+Lemma triple_compb (f : bool -> bool) :
+  f \o f \o f =1 f.
+Proof.
+Admitted.
 
 
 (* negb \o odd means "even" *)
 Lemma even_add :
   {morph (negb \o odd) : x y / x + y >-> x == y}.
 Proof.
+  have: forall (n : nat), odd n = ~~ odd n.+1.
+  move=> n.
+  compute.
+  set oddn := (fix odd (n0 : nat) : bool :=
+       match n0 with
+       | 0 => false
+       | n'.+1 => if odd n' then false else true
+       end) n.
+  by case oddn.
+  move=> ne_oddnnp1.
+
+  have: forall (x y : nat), x.+1 + y = (x + y).+1. by case; case.
+  move=> addSn.
+
+  have: forall (x y : nat), x + y.+1 = (x + y).+1.
+  elim. exact.
+  move=> n h y.
+  by rewrite addSn; rewrite addSn; rewrite h.
+  move=> addnS.
+
+  have: forall (x y : bool), x = y <-> ~~ x = ~~y. by case; case.
+  move => notenot.
+
+  have: forall (x : bool), x = ~~ ~~ x. by case.
+  move => not_not.
+
+  move=> x y.
+  rewrite /funcomp.
+  move: x y.
+  elim.
+  exact.
+  move=> n h y.
+  rewrite addSn.
+  rewrite -ne_oddnnp1.
+  rewrite notenot.
+  rewrite h.
+  rewrite ne_oddnnp1.
+  rewrite -not_not.
+  have: forall (a b : bool), (a == ~~ b) = (~~ a != ~~ b). by case; case.
+  move => ne.
+  by rewrite ne.
 Qed.
 
 End BooleanLogic.
